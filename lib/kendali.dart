@@ -191,11 +191,14 @@ class _ControlPageState extends State<ControlPage> {
                   SizedBox(height: 10),
                   GestureDetector(
                     onTap: () {
-                      _selectTime(context, (newTime) {
-                        setState(() {
-                          _pumpNutrisiStartTime = newTime;
-                        });
-                      }, _pumpNutrisiStartTime);
+                      // Disable time selection if auto mode is active
+                      if (!isAuto) {
+                        _selectTime(context, (newTime) {
+                          setState(() {
+                            _pumpNutrisiStartTime = newTime;
+                          });
+                        }, _pumpNutrisiStartTime);
+                      }
                     },
                     child: Text(
                       "Jam Mulai: ${_formatTime(_pumpNutrisiStartTime)}",
@@ -225,18 +228,24 @@ class _ControlPageState extends State<ControlPage> {
                       });
                     },
                     onStartTimeTap: () {
-                      _selectTime(context, (newTime) {
-                        setState(() {
-                          _pumpNutrisiStartTime = newTime;
-                        });
-                      }, _pumpNutrisiStartTime);
+                      // Disable time selection if auto mode is active
+                      if (!isAuto) {
+                        _selectTime(context, (newTime) {
+                          setState(() {
+                            _pumpNutrisiStartTime = newTime;
+                          });
+                        }, _pumpNutrisiStartTime);
+                      }
                     },
                     onEndTimeTap: () {
-                      _selectTime(context, (newTime) {
-                        setState(() {
-                          _pumpNutrisiEndTime = newTime;
-                        });
-                      }, _pumpNutrisiEndTime);
+                      // Disable time selection if auto mode is active
+                      if (!isAuto) {
+                        _selectTime(context, (newTime) {
+                          setState(() {
+                            _pumpNutrisiEndTime = newTime;
+                          });
+                        }, _pumpNutrisiEndTime);
+                      }
                     },
                   ),
                   _buildDeviceCard(
@@ -254,18 +263,24 @@ class _ControlPageState extends State<ControlPage> {
                       });
                     },
                     onStartTimeTap: () {
-                      _selectTime(context, (newTime) {
-                        setState(() {
-                          _uvLightStartTime = newTime;
-                        });
-                      }, _uvLightStartTime);
+                      // Disable time selection if auto mode is active
+                      if (!isAuto) {
+                        _selectTime(context, (newTime) {
+                          setState(() {
+                            _uvLightStartTime = newTime;
+                          });
+                        }, _uvLightStartTime);
+                      }
                     },
                     onEndTimeTap: () {
-                      _selectTime(context, (newTime) {
-                        setState(() {
-                          _uvLightEndTime = newTime;
-                        });
-                      }, _uvLightEndTime);
+                      // Disable time selection if auto mode is active
+                      if (!isAuto) {
+                        _selectTime(context, (newTime) {
+                          setState(() {
+                            _uvLightEndTime = newTime;
+                          });
+                        }, _uvLightEndTime);
+                      }
                     },
                   ),
                   _buildDeviceCard(
@@ -283,34 +298,45 @@ class _ControlPageState extends State<ControlPage> {
                       });
                     },
                     onStartTimeTap: () {
-                      _selectTime(context, (newTime) {
-                        setState(() {
-                          _cameraStartTime = newTime;
-                        });
-                      }, _cameraStartTime);
+                      // Disable time selection if auto mode is active
+                      if (!isAuto) {
+                        _selectTime(context, (newTime) {
+                          setState(() {
+                            _cameraStartTime = newTime;
+                          });
+                        }, _cameraStartTime);
+                      }
                     },
                     onEndTimeTap: () {
-                      _selectTime(context, (newTime) {
-                        setState(() {
-                          _cameraEndTime = newTime;
-                        });
-                      }, _cameraEndTime);
+                      // Disable time selection if auto mode is active
+                      if (!isAuto) {
+                        _selectTime(context, (newTime) {
+                          setState(() {
+                            _cameraEndTime = newTime;
+                          });
+                        }, _cameraEndTime);
+                      }
                     },
                   ),
 
-                  // Switch untuk mengaktifkan otomatisasi
+                  // Switch for Auto
                   SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Aktifkan Otomatisasi"),
+                      Text(
+                        "Otomatis",
+                        style: TextStyle(fontSize: 18),
+                      ),
                       Switch(
                         value: isAuto,
                         onChanged: (value) {
                           setState(() {
                             isAuto = value;
                             if (isAuto) {
-                              _checkAndUpdateDeviceStatus(); // Cek status perangkat saat otomatisasi diaktifkan
+                              _updateDevices(true); // Turn on all devices
+                            } else {
+                              _updateDevices(false); // Turn off all devices
                             }
                           });
                         },
@@ -326,7 +352,6 @@ class _ControlPageState extends State<ControlPage> {
     );
   }
 
-  // Fungsi untuk membangun tampilan setiap perangkat
   Widget _buildDeviceCard({
     required String title,
     required IconData icon,
@@ -340,36 +365,53 @@ class _ControlPageState extends State<ControlPage> {
     required VoidCallback onEndTimeTap,
   }) {
     return Card(
-      child: ListTile(
-        leading: Icon(icon, color: iconColor),
-        title: Text(title),
-        subtitle: Column(
+      elevation: 2,
+      margin: EdgeInsets.symmetric(vertical: 8.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              children: [
+                Icon(icon, color: iconColor, size: 32),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Switch(
+                  value: isOn,
+                  onChanged: onChanged,
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
             Text("Status: $statusText"),
-            Text("Jam Mulai: ${_formatTime(startTime)}"),
-            Text("Jam Selesai: ${_formatTime(endTime)}"),
+            GestureDetector(
+              onTap: onStartTimeTap,
+              child: Text(
+                "Jam Mulai: ${_formatTime(startTime)}",
+                style: TextStyle(fontSize: 16, color: Colors.black),
+              ),
+            ),
+            GestureDetector(
+              onTap: onEndTimeTap,
+              child: Text(
+                "Jam Selesai: ${_formatTime(endTime)}",
+                style: TextStyle(fontSize: 16, color: Colors.black),
+              ),
+            ),
           ],
         ),
-        trailing: Switch(
-          value: isOn,
-          onChanged: onChanged,
-        ),
-        onTap: () {
-          onStartTimeTap(); // Tapped on the card to update start time
-        },
-        onLongPress: onEndTimeTap, // Long pressed to update end time
       ),
     );
   }
 
-  // Fungsi untuk mengecek status otomatisasi dan mematikan perangkat jika perlu
   void _checkAutoStatus() {
-    if (!isAuto) {
-      if (!isPumpOn1) {
-        isUvLightOn = false; // Matikan lampu UV jika pompa tidak menyala
-        isCameraOn = false; // Matikan kamera jika pompa tidak menyala
-      }
-    }
+    // Check if all devices are on, and update isAuto accordingly
+    isAuto = isPumpOn1 && isUvLightOn && isCameraOn;
   }
 }

@@ -3,17 +3,15 @@ import 'package:flutter/material.dart';
 class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Mendapatkan tinggi dan lebar layar
+    // Get screen height and width
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors
-            .green[900], // Mengubah warna latar belakang AppBar menjadi hijau
+        backgroundColor: Colors.green[900],
         elevation: 0,
-        automaticallyImplyLeading:
-            false, // Agar tidak menggunakan default leading
+        automaticallyImplyLeading: false,
         title: Row(
           children: [
             IconButton(
@@ -23,11 +21,10 @@ class ProfileScreen extends StatelessWidget {
               },
             ),
             Text(
-              'Profil', // Menambahkan teks "Profil" yang sejajar dengan tombol kembali
+              'Profil',
               style: TextStyle(
-                color: Colors.white, // Warna teks
-                fontSize:
-                    screenWidth * 0.05, // Sesuaikan ukuran teks dengan layar
+                color: Colors.white,
+                fontSize: screenWidth * 0.05,
               ),
             ),
           ],
@@ -39,166 +36,165 @@ class ProfileScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Membuat jarak yang fleksibel untuk mendukung tampilan yang responsif
               SizedBox(height: screenHeight * 0.1),
 
-              // Icon Profil Besar
+              // Profile Icon
               CircleAvatar(
-                radius: screenWidth * 0.2, // Responsif berdasarkan lebar layar
+                radius: screenWidth * 0.2,
                 backgroundColor: Colors.green[900],
                 child: Icon(
                   Icons.person,
-                  size: screenWidth * 0.25, // Responsif berdasarkan lebar layar
+                  size: screenWidth * 0.25,
                   color: Colors.white,
                 ),
               ),
-              SizedBox(height: screenHeight * 0.05),
+              SizedBox(height: screenHeight * 0.03),
 
-              // TextField untuk Nama Pengguna
+              // Name TextField
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Nama',
-                  labelStyle: TextStyle(
-                      color: const Color.fromARGB(255, 193, 193, 193)),
+                  labelStyle: TextStyle(color: Colors.grey),
                   hintText: 'Masukkan Nama Pengguna',
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.green),
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.green, width: 1.5),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.green),
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.green, width: 1.5),
                   ),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                 ),
               ),
-              SizedBox(height: screenHeight * 0.05),
+              SizedBox(height: screenHeight * 0.03),
 
-              // Membuat tombol Edit dan Keluar dengan ukuran yang sama
+              // Password TextField
+              TextFormField(
+                obscureText: true, // Hide password input
+                decoration: InputDecoration(
+                  labelText: 'Kata Sandi',
+                  labelStyle: TextStyle(color: Colors.grey),
+                  hintText: 'Masukkan Kata Sandi',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.green, width: 1.5),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.green, width: 1.5),
+                  ),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                ),
+              ),
+              SizedBox(height: screenHeight * 0.04),
+
+              // Action buttons: Edit and Logout
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // Tombol Edit
-                  SizedBox(
-                    width: screenWidth * 0.4, // Lebar tombol diatur agar sama
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Menampilkan dialog konfirmasi edit
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text("Konfirmasi Edit"),
-                              content: Text(
-                                  "Apakah Anda yakin ingin mengedit profil ini?"),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                        .pop(); // Menutup dialog
-                                  },
-                                  child: Text("Batal"),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                        .pop(); // Menutup dialog
-                                    // Tambahkan logika untuk edit profil di sini
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content:
-                                              Text('Profil berhasil diedit')),
-                                    );
-                                  },
-                                  child: Text("Edit"),
-                                ),
-                              ],
-                            );
-                          },
+                  _buildActionButton(
+                    context,
+                    label: 'Edit',
+                    color: Colors.blue,
+                    onPressed: () => _showConfirmationDialog(
+                      context,
+                      title: "Konfirmasi Edit",
+                      content: "Apakah Anda yakin ingin mengedit profil ini?",
+                      confirmLabel: "Edit",
+                      onConfirm: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Profil berhasil diedit')),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue, // Warna tombol biru
-                        padding: EdgeInsets.symmetric(
-                          vertical: screenHeight * 0.02,
-                        ), // Responsif berdasarkan ukuran layar
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(20), // Sudut melengkung
-                        ),
-                      ),
-                      child: Text(
-                        'Edit',
-                        style: TextStyle(
-                          fontSize: screenWidth *
-                              0.05, // Responsif berdasarkan lebar layar
-                          color: Colors.white,
-                        ),
-                      ),
                     ),
                   ),
-
-                  // Tombol Keluar
-                  SizedBox(
-                    width: screenWidth * 0.4, // Lebar tombol diatur agar sama
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Menampilkan dialog konfirmasi keluar
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text("Konfirmasi Keluar"),
-                              content: Text("Apakah Anda yakin ingin keluar?"),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                        .pop(); // Menutup dialog
-                                  },
-                                  child: Text("Batal"),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                        .pop(); // Menutup dialog
-                                    // Tambahkan logika keluar aplikasi atau navigasi di sini
-                                  },
-                                  child: Text("Keluar"),
-                                ),
-                              ],
-                            );
-                          },
-                        );
+                  _buildActionButton(
+                    context,
+                    label: 'Keluar',
+                    color: Colors.red,
+                    onPressed: () => _showConfirmationDialog(
+                      context,
+                      title: "Konfirmasi Keluar",
+                      content: "Apakah Anda yakin ingin keluar?",
+                      confirmLabel: "Keluar",
+                      onConfirm: () {
+                        // Logic for logout
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red, // Warna tombol merah
-                        padding: EdgeInsets.symmetric(
-                          vertical: screenHeight * 0.02,
-                        ), // Responsif berdasarkan ukuran layar
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(20), // Sudut melengkung
-                        ),
-                      ),
-                      child: Text(
-                        'Keluar',
-                        style: TextStyle(
-                          fontSize: screenWidth *
-                              0.05, // Responsif berdasarkan lebar layar
-                          color: Colors.white,
-                        ),
-                      ),
                     ),
                   ),
                 ],
               ),
 
-              // Membuat jarak yang fleksibel untuk mendukung tampilan yang responsif
               SizedBox(height: screenHeight * 0.1),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  // Function to build action buttons
+  Widget _buildActionButton(BuildContext context,
+      {required String label,
+      required Color color,
+      required VoidCallback onPressed}) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return SizedBox(
+      width: screenWidth * 0.4,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          padding: EdgeInsets.symmetric(
+              vertical: 15), // Increased padding for better touch area
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: screenWidth * 0.05,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Function to show confirmation dialogs
+  void _showConfirmationDialog(BuildContext context,
+      {required String title,
+      required String content,
+      required String confirmLabel,
+      required VoidCallback onConfirm}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("Batal"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                onConfirm(); // Call the confirmation action
+              },
+              child: Text(confirmLabel),
+            ),
+          ],
+        );
+      },
     );
   }
 }

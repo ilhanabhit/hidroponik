@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'beranda.dart'; // Import halaman Beranda
 import 'kendali.dart'; // Import halaman Kendali
+import 'beranda.dart'; // Import halaman Beranda
 import 'riwayat.dart'; // Import halaman Riwayat
+import 'login.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomePage(),
+      home: LoginScreen(), // Ubah home ke LoginScreen untuk halaman pertama
       theme: ThemeData(primarySwatch: Colors.green),
     );
   }
@@ -23,12 +24,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _currentIndex = 0;
+  int _currentIndex = 1; // Set Beranda (index 1) sebagai halaman awal
 
   // Daftar halaman yang akan ditampilkan berdasarkan indeks
   final List<Widget> _pages = [
+    ControlPage(), // Halaman Kendali
     HomeScreen(), // Halaman Beranda
-    ControlPage(), // Halaman Pengaturan Manual
     HistoryScreen(), // Halaman Riwayat
   ];
 
@@ -43,8 +44,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: _pages[
-          _currentIndex], // Menampilkan halaman berdasarkan indeks yang dipilih
+      body: _pages[_currentIndex], // Menampilkan halaman berdasarkan indeks yang dipilih
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         selectedItemColor: Colors.green,
