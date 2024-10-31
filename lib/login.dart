@@ -1,31 +1,74 @@
 import 'package:flutter/material.dart';
-import 'navbar.dart'; // Import file navbar.dart
+import 'package:http/http.dart' as http;
+import 'dart:convert'; // For JSON decoding
+import 'navbar.dart';
 
 class LoginScreen extends StatelessWidget {
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  Future<void> login(BuildContext context) async {
+    final String apiUrl ="http://172.16.111.128/api/login.php"; // Replace with your API URL
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "username": usernameController.text,
+          "password": passwordController.text,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Assuming the response contains a token or success indicator
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        if (responseData['success']) {
+          // Navigate to HomePage if login is successful
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        } else {
+          // Show error message if login fails
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Login failed. Please try again.')),
+          );
+        }
+      } else {
+        // Handle server error response
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Server error. Please try again later.')),
+        );
+      }
+    } catch (e) {
+      // Handle network errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Network error. Please check your connection.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView( // Menambahkan SingleChildScrollView untuk membuat layar bisa di-scroll
+      body: SingleChildScrollView(
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: 100), // Menambahkan jarak dari atas
-                // Logo di bagian atas
+                SizedBox(height: 100),
                 Image.asset(
-                  'assets/image/logo1.png', // Path logo AQUAGROW Anda
-                  height: 210, // Sesuaikan tinggi logo
+                  'assets/image/logo1.png',
+                  height: 210,
                 ),
                 SizedBox(height: 20),
-
-                // Nama Aplikasi (AQUAGROW)
                 SizedBox(height: 40),
-
-                // TextField untuk Nama Pengguna
                 TextFormField(
+                  controller: usernameController,
                   decoration: InputDecoration(
                     labelText: 'Masukkan Nama Pengguna',
                     labelStyle: TextStyle(
@@ -41,12 +84,10 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(
-                    height: 20), // Jarak antara kolom Nama Pengguna dan Password
-
-                // TextField untuk Password
+                SizedBox(height: 20),
                 TextFormField(
-                  obscureText: true, // Menyembunyikan teks saat diketik
+                  controller: passwordController,
+                  obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'Masukkan Password',
                     labelStyle: TextStyle(
@@ -62,25 +103,14 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(
-                    height: 30), // Jarak antara kolom Password dan tombol Masuk
-
-                // Tombol Masuk
+                SizedBox(height: 30),
                 ElevatedButton(
-                  onPressed: () {
-                    // Navigasi ke halaman Navbar
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
-                    );
-                  },
+                  onPressed: () => login(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green, // Warna tombol hijau
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 10), // Ubah padding untuk tombol lebih kecil
+                    backgroundColor: Colors.green,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10), // Sudut melengkung
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   child: Text(
